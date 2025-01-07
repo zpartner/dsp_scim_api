@@ -1,0 +1,769 @@
+{
+	"info": {
+		"_postman_id": "3289e761-5b4e-491b-a407-f006e01f36d7",
+		"name": "DSP SCIM API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "20609503",
+		"_collection_link": "https://speeding-sunset-3744-1.postman.co/workspace/SAP-SAC---API~c0663a60-c2ad-4f83-b86b-80c75adf0f97/collection/20609503-3289e761-5b4e-491b-a407-f006e01f36d7?action=share&source=collection_link&creator=20609503"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var data = pm.response.json()\r",
+									"\r",
+									"pm.collectionVariables.set(\"token\", data.access_token);\r",
+									"console.log(\"Bearer Token: \" + data.access_token);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{client_secret}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{client_id}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "type",
+									"value": "",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{token_url }}?grant_type=client_credentials",
+							"host": [
+								"{{token_url }}"
+							],
+							"query": [
+								{
+									"key": "grant_type",
+									"value": "client_credentials"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Obtain CSRF Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var csrf = pm.response.headers.get('x-csrf-token')\r",
+									"\r",
+									"pm.collectionVariables.set(\"csrf_token\", csrf)\r",
+									"\r",
+									"// Optionally log it for debugging\r",
+									"console.log(\"CSRF token from header is set to: \" + csrf);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-sap-sac-custom-auth",
+								"value": "true",
+								"type": "text"
+							},
+							{
+								"key": "x-csrf-token",
+								"value": "fetch",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{tenant_url}}/api/v1/csrf",
+							"host": [
+								"{{tenant_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"csrf"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User Requests",
+			"item": [
+				{
+					"name": "List Users",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-sap-sac-custom-auth",
+								"value": "true",
+								"type": "text"
+							},
+							{
+								"key": "x-csrf-token",
+								"value": "{{csrf_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{tenant_url}}/api/v1/scim2/Users/",
+							"host": [
+								"{{tenant_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"scim2",
+								"Users",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List User (single)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-sap-sac-custom-auth",
+								"value": "true",
+								"type": "text"
+							},
+							{
+								"key": "x-csrf-token",
+								"value": "{{csrf_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{tenant_url}}/api/v1/scim2/Users/22a0d6a3-338a-4bc8-8399-4ed0f544fe08",
+							"host": [
+								"{{tenant_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"scim2",
+								"Users",
+								"22a0d6a3-338a-4bc8-8399-4ed0f544fe08"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "x-sap-sac-custom-auth",
+								"value": "true",
+								"type": "text"
+							},
+							{
+								"key": "x-csrf-token",
+								"value": "{{csrf_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"schemas\": [\r\n        \"urn:ietf:params:scim:schemas:core:2.0:User\",\r\n        \"urn:ietf:params:scim:schemas:extension:enterprise:2.0:User\"\r\n    ],\r\n    \"userName\": \"LGARCIA\",\r\n    \"name\": {\r\n        \"familyName\": \"Garcia\",\r\n        \"givenName\": \"Lisa\",\r\n        \"formatted\": \"Lisa Garcia\"\r\n    },\r\n    \"displayName\": \"Lisa Garcia\",\r\n    \"preferredLanguage\": \"en\",\r\n    \"active\": true,\r\n    \"emails\": [\r\n    {\r\n        \"value\": \"lisa.garcia@company.com\",\r\n        \"type\": \"work\",\r\n        \"primary\": true\r\n    }\r\n    ],\r\n    \"urn:sap:params:scim:schemas:extension:sac:2.0:user-custom-parameters\": {\r\n        \"idpUserId\": \"lisa.garcia@company.com\"\r\n     }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{tenant_url}}/api/v1/scim2/Users/",
+							"host": [
+								"{{tenant_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"scim2",
+								"Users",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Modify User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "x-sap-sac-custom-auth",
+								"value": "true",
+								"type": "text"
+							},
+							{
+								"key": "x-csrf-token",
+								"value": "{{csrf_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"schemas\": [\r\n        \"urn:ietf:params:scim:schemas:core:2.0:User\",\r\n        \"urn:ietf:params:scim:schemas:extension:enterprise:2.0:User\"\r\n    ],\r\n    \"userName\": \"LGARCIA\",\r\n    \"name\": {\r\n        \"familyName\": \"Garcia\",\r\n        \"givenName\": \"Tina\",\r\n        \"formatted\": \"Tina Garcia\"\r\n    },\r\n    \"displayName\": \"Tina Garci\",\r\n    \"preferredLanguage\": \"en\",\r\n    \"active\": true,\r\n    \"emails\": [\r\n    {\r\n        \"value\": \"lisa.garcia@company.com\",\r\n        \"type\": \"work\",\r\n        \"primary\": true\r\n    }\r\n    ],\r\n    \"roles\": [\r\n        {\r\n            \"value\": \"PROFILE:t.S:Z_SCOPED_ROLE_TEST\",\r\n            \"display\": \"Z_SCOPED_ROLE_TEST\",\r\n            \"primary\": true\r\n        }    \r\n    ],\r\n    \"urn:sap:params:scim:schemas:extension:sac:2.0:user-custom-parameters\": {\r\n        \"idpUserId\": \"lisa.garcia@company.com\"\r\n     }\r\n    \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{tenant_url}}/api/v1/scim2/Users/a0ef2763-21c1-4df4-999f-df0b48e96caf",
+							"host": [
+								"{{tenant_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"scim2",
+								"Users",
+								"a0ef2763-21c1-4df4-999f-df0b48e96caf"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "x-sap-sac-custom-auth",
+								"value": "true",
+								"type": "text"
+							},
+							{
+								"key": "x-csrf-token",
+								"value": "{{csrf_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{tenant_url}}/api/v1/scim2/Users/a0ef2763-21c1-4df4-999f-df0b48e96caf",
+							"host": [
+								"{{tenant_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"scim2",
+								"Users",
+								"a0ef2763-21c1-4df4-999f-df0b48e96caf"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "API Info",
+			"item": [
+				{
+					"name": "ServiceProviderConfig",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-sap-sac-custom-auth",
+								"value": "true",
+								"type": "text"
+							},
+							{
+								"key": "x-csrf-token",
+								"value": "{{csrf_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{tenant_url}}/api/v1/scim2/ServiceProviderConfig",
+							"host": [
+								"{{tenant_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"scim2",
+								"ServiceProviderConfig"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Schemas",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-sap-sac-custom-auth",
+								"value": "true",
+								"type": "text"
+							},
+							{
+								"key": "x-csrf-token",
+								"value": "{{csrf_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{tenant_url}}/api/v1/scim2/Schemas",
+							"host": [
+								"{{tenant_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"scim2",
+								"Schemas"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ResourceTypes",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-sap-sac-custom-auth",
+								"value": "true",
+								"type": "text"
+							},
+							{
+								"key": "x-csrf-token",
+								"value": "{{csrf_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{tenant_url}}/api/v1/scim2/ResourceTypes",
+							"host": [
+								"{{tenant_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"scim2",
+								"ResourceTypes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ResourceTypes (Individual)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "x-sap-sac-custom-auth",
+								"value": "true",
+								"type": "text"
+							},
+							{
+								"key": "x-csrf-token",
+								"value": "{{csrf_token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{tenant_url}}/api/v1/scim2/ResourceTypes/User",
+							"host": [
+								"{{tenant_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"scim2",
+								"ResourceTypes",
+								"User"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "token_url ",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "client_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "client_secret",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "tenant_url",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "csrf_token",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
